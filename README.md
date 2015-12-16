@@ -1,5 +1,5 @@
 # Lua-tg
-Allows you to send tg-cli command line commands via tcp in lua
+Allows you to send tg-cli commands from Lua via TCP.
 
 ### Usage
 ```lua
@@ -10,4 +10,4 @@ link = tg:export_chat_link(chat_id)
 print(link)
 ```
 
-Thanks to [@topkecleon](https://github.com/topkecleon) for stuff
+Thanks to [@topkecleon](https://github.com/topkecleon) for petty improvements.
