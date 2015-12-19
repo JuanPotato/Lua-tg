@@ -24,7 +24,7 @@ local Sender = function(ip, port)
             self.sender:receive("*l") -- End of output
             return data:gsub('\n$','')
         end,
-        
+
         _filter_text = function(self, str)
             return string.gsub(str, "\\", "\\\\"):gsub("\"", "\\\""):gsub("\n", "\\n"):gsub("\t", "\\t")
         end,
@@ -33,7 +33,7 @@ local Sender = function(ip, port)
         send = function(self, command, reply_id, disable_preview)
             local preview_part = "[enable_preview] "
             local reply_part = ""
-            
+
             if reply_id then
                 if type(reply_id) ~= "number" then
                     print("I need an int for reply_id m8")
@@ -41,11 +41,11 @@ local Sender = function(ip, port)
                     reply_part = "[reply=" .. reply_id .. "] "
                 end
             end
-            
+
             if disable_preview then
                 preview_part = "[disable_preview] "
             end
-            
+
             return self._send(self, reply_part .. preview_part .. command .. "\n")
         end,
 
@@ -86,6 +86,11 @@ local Sender = function(ip, port)
             local chat_id = chat_id < 0 and chat_id * -1 or chat_id
             local new_name = self._filter_text(self, new_name)
             return self.send(self, "rename_chat chat#" .. chat_id .. ' "' .. new_name .. '"')
+        end,
+
+        -- Quits telegram-cli
+        quit = function(self)
+			self.sender:send("quit\n")
         end
     }
 end
