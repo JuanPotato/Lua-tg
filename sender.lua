@@ -90,7 +90,20 @@ local Sender = function(ip, port)
 
         -- Quits telegram-cli
         quit = function(self)
-			self.sender:send("quit\n")
+            self.sender:send("quit\n")
+        end,
+
+        -- Downloads a group photo.
+        load_chat_photo = function(self, chat_id)
+            local chat_id = chat_id < 0 and chat_id * -1 or chat_id
+            return self.send(self, "load_chat_photo chat#" .. chat_id)
+        end,
+
+        -- Sets a group photo.
+        chat_set_photo = function(self, chat_id, filename)
+            local chat_id = chat_id < 0 and chat_id * -1 or chat_id
+            local filename = self._filter_text(self, filename)
+            return self.send(self, "chat_set_photo chat#" .. chat_id .. " " .. filename)
         end
     }
 end
