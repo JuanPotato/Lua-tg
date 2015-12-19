@@ -104,10 +104,106 @@ local Sender = function(ip, port)
             return self.send(self, command:format(username), true)
         end,
 
+        --  Deletes contact from contact list
+        del_contact = function(self, user_id)
+            local command = 'del_contact %s'
+            return self.send(self, command:format(user_id))
+        end,
+
+        --  Deletes message
+        delete_msg = function(self, msg_id)
+            local command = 'delete_msg %s'
+            return self.send(self, command:format(msg_id))
+        end,
+
+        --  Returns card that can be imported by another user with import_card method
+        export_card = function(self)
+            local command = 'export_card'
+            return self.send(self, command, true)
+        end,
+
         -- Get the invite link of a chat
         export_chat_link = function(self, chat_id)
             local command = 'export_chat_link chat#%s'
             return self.send(self, command:format(math.abs(chat_id)), true)
+        end,
+
+        --  Get message by id
+        get_message = function(self, msg_id)
+            local command = 'get_message %s'
+            return self.send(self, command:format(msg_id), true)
+        end,
+
+        --  Get our user info
+        get_self = function(self)
+            local command = 'get_self'
+            return self.send(self, command, true)
+        end,
+
+        --  Gets user by card and prints it name. You can then send messages to him as usual
+        import_card = function(self, card)
+            local command = 'import_card %s'
+            return self.send(self, command:format(card), true)
+        end,
+
+        --  Downloads audio file and returns path
+        load_audio = function(self, msg_id)
+            local command = 'load_audio %s'
+            return self.send(self, command:format(msg_id), true)
+        end,
+
+        --  Downloads group photo and returns path
+        load_chat_photo = function(self, chat_id)
+            local command = 'load_chat_photo %s'
+            return self.send(self, command:format(math.abs(chat_id)), true)
+        end,
+
+        --  Downloads document file and returns path
+        load_document = function(self, msg_id)
+            local command = 'load_document %s'
+            return self.send(self, command:format(msg_id), true)
+        end,
+
+        --  Downloads document file thumbnail and returns path
+        load_document_thumb = function(self, msg_id)
+            local command = 'load_document_thumb %s'
+            return self.send(self, command:format(msg_id), true)
+        end,
+
+        --  Downloads file and returns path
+        load_file = function(self, msg_id)
+            local command = 'load_file %s'
+            return self.send(self, command:format(msg_id), true)
+        end,
+
+        --  Downloads file thumbnail and returns path
+        load_file_thumb = function(self, msg_id)
+            local command = 'load_file_thumb %s'
+            return self.send(self, command:format(msg_id), true)
+        end,
+
+        --  Downloads photo and returns path
+        load_photo = function(self, msg_id)
+            local command = 'load_photo %s'
+            return self.send(self, command:format(msg_id), true)
+        end,
+
+        --  Downloads a users's photo and returns path
+        load_user_photo = function(self, user_id)
+            local command = 'load_photo %s'
+            return self.send(self, command:format(user_id), true)
+        end,
+
+        --  Downloads video and returns path
+        load_video = function(self, msg_id)
+            local command = 'load_video %s'
+            return self.send(self, command:format(msg_id), true)
+        end,
+
+        --  Downloads video thumbnail and returns path
+        load_video_thumb = function(self, msg_id)
+            local command = 'load_video_thumb %s'
+            return self.send(self, command:format(msg_id), true)
         end,
 
         -- Send message function: groups will be based as negative ids
