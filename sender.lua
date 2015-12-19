@@ -3,10 +3,6 @@
     Usage:
         sender = require('sender')
         tg = sender(ip, port)
-        
-         f = open("commands.txt")
-        for line in f.read().split("\n"):
-
         tg:send_msg(user_id, text)
         link = tg:export_chat_link(chat_id)
         print(link)
