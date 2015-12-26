@@ -18,11 +18,17 @@ local Sender = function(ip, port)
         sender = socket.connect(ip, port),
 
         -- Raw send function
-        _send = function(self, command)
-            self.sender:send(command)
-            local data = self.sender:receive(tonumber(string.match(self.sender:receive("*l"), "ANSWER (%d+)")))
-            self.sender:receive("*l") -- End of output
-            return data:gsub('\n$','')
+        _send = function(self, command, output)
+            if not output then
+                self.sender:send(command)
+                local data = self.sender:receive(tonumber(string.match(self.sender:receive("*l"), "ANSWER (%d+)")))
+                self.sender:receive("*l") -- End of output
+                return data:gsub('\n$','')
+            else
+                local s = socket.connect(ip, port)
+                s:send(command)
+                s:close()
+            end
         end,
 
         _filter_text = function(self, str)
@@ -30,7 +36,7 @@ local Sender = function(ip, port)
         end,
 
         -- Send function with filters, replies, and previews
-        send = function(self, command, reply_id, disable_preview)
+        send = function(self, command, reply_id, disable_preview, output)
             local preview_part = "[enable_preview] "
             local reply_part = ""
 
@@ -46,64 +52,194 @@ local Sender = function(ip, port)
                 preview_part = "[disable_preview] "
             end
 
-            return self._send(self, reply_part .. preview_part .. command .. "\n")
+            return self._send(self, reply_part .. preview_part .. command .. "\n", no_output)
+        end,
+
+        -- Adds a user as a contact
+        add_contact = function(self, phone, first_name, last_name)
+            local command = 'add_contact %s "%s" "%s"'
+            return self.send(self, command:format(phone, first_name, last_name))
+        end,
+
+        --  Blocks user
+        block_user = function(self, user_id)
+            local command = 'block_user %s'
+            return self.send(self, command:format(user_id))
+        end,
+
+        -- Adds a user to a chat
+        chat_add_user = function(self, chat_id, user_id)
+            local command = 'chat_add_user chat#%s user#%s'
+            return self.send(self, command:format(math.abs(chat_id), user_id))
+        end,
+
+        -- Removes a user from a chat
+        chat_del_user = function(self, chat_id, user_id)
+            local command = 'chat_del_user _user chat#%s user#%s'
+            return self.send(self, command:format(math.abs(chat_id), user_id))
+        end,
+
+        --  Returns info about chat (id, members, admin, etc.)
+        chat_info = function(self, chat_id)
+            local command = 'chat_info %s'
+            return self.send(self, command:format(math.abs(chat_id)), true)
+        end,
+
+        --  Sets chat photo. Photo will be cropped to square
+        chat_set_photo = function(self, chat_id, filename)
+            local command = 'chat_set_photo %s %s'
+            return self.send(self, command:format(math.abs(chat_id), filename))
+        end,
+
+        --  Returns contact list
+        contact_list = function(self)
+            local command = 'contact_list'
+            return self.send(self, command, true)
+        end,
+
+        --  Searches user by username
+        contact_search = function(self, username)
+            local command = 'contact_search %s'
+            local username = self._filter_text(self, username)
+            return self.send(self, command:format(username), true)
+        end,
+
+        --  Deletes contact from contact list
+        del_contact = function(self, user_id)
+            local command = 'del_contact %s'
+            return self.send(self, command:format(user_id))
+        end,
+
+        --  Deletes message
+        delete_msg = function(self, msg_id)
+            local command = 'delete_msg %s'
+            return self.send(self, command:format(msg_id))
+        end,
+
+        --  Returns card that can be imported by another user with import_card method
+        export_card = function(self)
+            local command = 'export_card'
+            return self.send(self, command, true)
+        end,
+
+        -- Get the invite link of a chat
+        export_chat_link = function(self, chat_id)
+            local command = 'export_chat_link chat#%s'
+            return self.send(self, command:format(math.abs(chat_id)), true)
+        end,
+
+        --  Get message by id
+        get_message = function(self, msg_id)
+            local command = 'get_message %s'
+            return self.send(self, command:format(msg_id), true)
+        end,
+
+        --  Get our user info
+        get_self = function(self)
+            local command = 'get_self'
+            return self.send(self, command, true)
+        end,
+
+        --  Gets user by card and prints it name. You can then send messages to him as usual
+        import_card = function(self, card)
+            local command = 'import_card %s'
+            return self.send(self, command:format(card), true)
+        end,
+
+        --  Downloads audio file and returns path
+        load_audio = function(self, msg_id)
+            local command = 'load_audio %s'
+            return self.send(self, command:format(msg_id), true)
+        end,
+
+        --  Downloads group photo and returns path
+        load_chat_photo = function(self, chat_id)
+            local command = 'load_chat_photo %s'
+            return self.send(self, command:format(math.abs(chat_id)), true)
+        end,
+
+        --  Downloads document file and returns path
+        load_document = function(self, msg_id)
+            local command = 'load_document %s'
+            return self.send(self, command:format(msg_id), true)
+        end,
+
+        --  Downloads document file thumbnail and returns path
+        load_document_thumb = function(self, msg_id)
+            local command = 'load_document_thumb %s'
+            return self.send(self, command:format(msg_id), true)
+        end,
+
+        --  Downloads file and returns path
+        load_file = function(self, msg_id)
+            local command = 'load_file %s'
+            return self.send(self, command:format(msg_id), true)
+        end,
+
+        --  Downloads file thumbnail and returns path
+        load_file_thumb = function(self, msg_id)
+            local command = 'load_file_thumb %s'
+            return self.send(self, command:format(msg_id), true)
+        end,
+
+        --  Downloads photo and returns path
+        load_photo = function(self, msg_id)
+            local command = 'load_photo %s'
+            return self.send(self, command:format(msg_id), true)
+        end,
+
+        --  Downloads a users's photo and returns path
+        load_user_photo = function(self, user_id)
+            local command = 'load_photo %s'
+            return self.send(self, command:format(user_id), true)
+        end,
+
+        --  Downloads video and returns path
+        load_video = function(self, msg_id)
+            local command = 'load_video %s'
+            return self.send(self, command:format(msg_id), true)
+        end,
+
+        --  Downloads video thumbnail and returns path
+        load_video_thumb = function(self, msg_id)
+            local command = 'load_video_thumb %s'
+            return self.send(self, command:format(msg_id), true)
         end,
 
         -- Send message function: groups will be based as negative ids
-        send_msg = function(self, user_id, text, reply_id, disable_preview)
+        msg = function(self, user_id, text, reply_id, disable_preview)
             if type(user_id) ~= "number" then
                 print("I need an int for user_id m8")
                 return
             end
 
+            local command = 'msg %s%s "$s"'
             local user_type = user_id > 0 and "user#" or "chat#"
-            local user_id = user_id > 0 and user_id or user_id * -1
             local text = self._filter_text(self, text)
-
-            return self.send(self, "msg " .. user_type .. user_id .. ' "' .. text .. '"', reply_id, disable_preview)
+            return self.send(self, command:format(user_type, math.abs(user_id), text), reply_id, disable_preview)
         end,
 
-        -- Get the invite link of a chat
-        export_chat_link = function(self, chat_id)
-            local chat_id = chat_id < 0 and chat_id * -1 or chat_id
-            return self.send(self, "export_chat_link chat#" .. chat_id)
-        end,
-
-        -- Removes a user from a chat
-        chat_del_user = function(self, chat_id, user_id)
-            local chat_id = chat_id < 0 and chat_id * -1 or chat_id
-            return self.send(self, "chat_del_user chat#" .. chat_id .. " user#" .. user_id)
-        end,
-
-        -- Adds a user to a chat
-        chat_add_user = function(self, chat_id, user_id)
-            local chat_id = chat_id < 0 and chat_id * -1 or chat_id
-            return self.send(self, "chat_add_user chat#" .. chat_id .. " user#" .. user_id)
-        end,
-
-        -- Adds a user to a chat
-        rename_chat = function(self, chat_id, new_name)
-            local chat_id = chat_id < 0 and chat_id * -1 or chat_id
-            local new_name = self._filter_text(self, new_name)
-            return self.send(self, "rename_chat chat#" .. chat_id .. ' "' .. new_name .. '"')
-        end,
-
-        -- Quits telegram-cli
+        -- Quits telegram-cli immediately
         quit = function(self)
             self.sender:send("quit\n")
         end,
 
-        -- Downloads a group photo.
-        load_chat_photo = function(self, chat_id)
-            local chat_id = chat_id < 0 and chat_id * -1 or chat_id
-            return self.send(self, "load_chat_photo chat#" .. chat_id)
+        -- Renames a chat
+        rename_chat = function(self, chat_id, new_name)
+            local command = 'rename_chat chat#%s %s'
+            local new_name = self._filter_text(self, new_name)
+            return self.send(self, command:format(math.abs(chat_id), new_name))
         end,
 
-        -- Sets a group photo.
-        chat_set_photo = function(self, chat_id, filename)
-            local chat_id = chat_id < 0 and chat_id * -1 or chat_id
-            local filename = self._filter_text(self, filename)
-            return self.send(self, "chat_set_photo chat#" .. chat_id .. " " .. filename)
+        -- Waits for all queries to end, then quits telegram-cli
+        safe_quit = function(self)
+            self.sender:send("safe_quit\n")
+        end,
+
+        -- Returns message contents
+        view = function(self, msg_id)
+            local command = 'view %s'
+            return self.send(self, command:format(msg_id), true)
         end
     }
 end
