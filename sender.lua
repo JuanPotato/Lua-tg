@@ -119,7 +119,7 @@ local Sender = function(ip, port)
 
         -- Removes a user from a chat
         chat_del_user = function(self, chat_id, user_id)
-            local command = 'chat_del_user _user chat#%s user#%s'
+            local command = 'chat_del_user chat#%s user#%s'
             return self.send(self, command:format(math.abs(chat_id), user_id))
         end,
 
