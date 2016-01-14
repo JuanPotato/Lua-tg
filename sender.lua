@@ -95,7 +95,9 @@ local Sender = function(ip, port)
 
 		-- Sets the description for a channel/supergroup
 -- TODO: Make work with newline characters.
+-- Use [[]] instead of \n ?
         channel_set_about = function(self, channel_id, about)
+			about = about:gsub('\n', '\\n')
             channel_id = self.channelize(channel_id)
             local command ='channel_set_about channel#%s %q'
             return self.send(self, command:format(channel_id, about))
@@ -119,7 +121,7 @@ local Sender = function(ip, port)
 
         -- Removes a user from a chat
         chat_del_user = function(self, chat_id, user_id)
-            local command = 'chat_del_user _user chat#%s user#%s'
+            local command = 'chat_del_user chat#%s user#%s'
             return self.send(self, command:format(math.abs(chat_id), user_id))
         end,
 
@@ -131,7 +133,7 @@ local Sender = function(ip, port)
 
         --  Sets chat photo. Photo will be cropped to square
         chat_set_photo = function(self, chat_id, filename)
-            local command = 'chat_set_photo %s %s'
+            local command = 'chat_set_photo chat#%s %s'
             return self.send(self, command:format(math.abs(chat_id), filename))
         end,
 
