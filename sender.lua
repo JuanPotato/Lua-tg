@@ -95,9 +95,7 @@ local Sender = function(ip, port)
 
 		-- Sets the description for a channel/supergroup
 -- TODO: Make work with newline characters.
--- Use [[]] instead of \n ?
         channel_set_about = function(self, channel_id, about)
-			about = about:gsub('\n', '\\n')
             channel_id = self.channelize(channel_id)
             local command ='channel_set_about channel#%s %q'
             return self.send(self, command:format(channel_id, about))
@@ -200,7 +198,7 @@ local Sender = function(ip, port)
 
         --  Downloads group photo and returns path
         load_chat_photo = function(self, chat_id)
-            local command = 'load_chat_photo %s'
+            local command = 'load_chat_photo chat#%s'
             return self.send(self, command:format(math.abs(chat_id)), true)
         end,
 
