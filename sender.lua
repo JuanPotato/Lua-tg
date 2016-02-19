@@ -131,7 +131,7 @@ local Sender = function(ip, port)
 
         --  Sets chat photo. Photo will be cropped to square
         chat_set_photo = function(self, chat_id, filename)
-            local command = 'chat_set_photo %s %s'
+            local command = 'chat_set_photo chat#%s %s'
             return self.send(self, command:format(math.abs(chat_id), filename))
         end,
 
