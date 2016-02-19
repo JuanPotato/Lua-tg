@@ -198,7 +198,7 @@ local Sender = function(ip, port)
 
         --  Downloads group photo and returns path
         load_chat_photo = function(self, chat_id)
-            local command = 'load_chat_photo %s'
+            local command = 'load_chat_photo chat#%s'
             return self.send(self, command:format(math.abs(chat_id)), true)
         end,
 
