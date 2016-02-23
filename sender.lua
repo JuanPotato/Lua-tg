@@ -3,7 +3,7 @@
     Usage:
         sender = require('sender')
         tg = sender(ip, port)
-        tg:send_msg(user_id, text)
+        tg:msg(user_id, text)
         link = tg:export_chat_link(chat_id)
         print(link)
 ]]--
@@ -67,9 +67,9 @@ local Sender = function(ip, port)
             return self.send(self, command:format(user_id))
         end,
 
-    -- Begin Channel Stuff
+-- Begin Channel Stuff
 
-		-- Makes a channel ID in any format compliant with tg
+        -- Makes a channel ID in any format compliant with tg
         channelize = function(channel_id)
             channel_id = math.abs(channel_id)
             if tostring(channel_id):len() > 10 then
@@ -79,29 +79,29 @@ local Sender = function(ip, port)
             end
         end,
 
-		-- Adds a user to a channel/supergroup
+        -- Adds a user to a channel/supergroup
         channel_invite = function(self, channel_id, user_id)
             channel_id = self.channelize(channel_id)
             local command = 'channel_invite channel#%s user#%s'
             return self.send(self, command:format(channel_id, user_id))
         end,
 
-		-- Kicks a user from a supergroup
+        -- Kicks a user from a supergroup
         channel_kick = function(self, channel_id, user_id)
             channel_id = self.channelize(channel_id)
             local command = 'channel_kick channel#%s user#%s'
             return self.send(self, command:format(channel_id, user_id))
         end,
 
-		-- Sets the description for a channel/supergroup
--- TODO: Make work with newline characters.
+        -- Sets the description for a channel/supergroup
         channel_set_about = function(self, channel_id, about)
             channel_id = self.channelize(channel_id)
             local command ='channel_set_about channel#%s %q'
+            local about = self._filter_text(self, about)
             return self.send(self, command:format(channel_id, about))
         end,
 
-		-- Sets an admin for a channel/supergroup
+        -- Sets an admin for a channel/supergroup
         channel_set_admin = function(self, channel_id, user_id, setting)
             -- Where setting is 0, 1, or 2
             channel_id = self.channelize(channel_id)
@@ -109,7 +109,7 @@ local Sender = function(ip, port)
             return self.send(self, command:format(channel_id, user_id, setting))
         end,
 
-    -- End Channel Stuff
+-- End Channel Stuff
 
         -- Adds a user to a chat
         chat_add_user = function(self, chat_id, user_id)
@@ -251,17 +251,17 @@ local Sender = function(ip, port)
         end,
 
         -- Send message function: groups will be based as negative ids
-		msg = function(self, user_id, text, reply_id, disable_preview)
-			if type(user_id) ~= "number" then
-				print("I need an int for user_id m8")
-				return
-			end
+        msg = function(self, user_id, text, reply_id, disable_preview)
+            if type(user_id) ~= "number" then
+                print("I need an int for user_id m8")
+                return
+            end
 
-			local command = 'msg %s%s %q'
-			local user_type = user_id > 0 and "user#" or "chat#"
-			local text = self._filter_text(self, text)
-			return self.send(self, command:format(user_type, math.abs(user_id), text), reply_id, disable_preview)
-		end,
+            local command = 'msg %s%s %q'
+            local user_type = user_id > 0 and "user#" or "chat#"
+            local text = self._filter_text(self, text)
+            return self.send(self, command:format(user_type, math.abs(user_id), text), reply_id, disable_preview)
+        end,
 
         -- Quits telegram-cli immediately
         quit = function(self)
