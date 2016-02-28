@@ -21,13 +21,13 @@ local Sender = function(ip, port)
         _send = function(self, command, output)
             if not output then
                 self.sender:send(command)
-                local data = self.sender:receive(tonumber(string.match(self.sender:receive("*l"), "ANSWER (%d+)")))
-                self.sender:receive("*l") -- End of output
-                return data:gsub('\n$','')
             else
                 local s = socket.connect(ip, port)
                 s:send(command)
+                local data = s:receive(tonumber(string.match(s:receive("*l"), "ANSWER (%d+)")))
+                s:receive("*l") -- End of output
                 s:close()
+                return data:gsub('\n$','')
             end
         end,
 
