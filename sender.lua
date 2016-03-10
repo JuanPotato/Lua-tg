@@ -19,16 +19,16 @@ local Sender = function(ip, port)
 
         -- Raw send function
         _send = function(self, command, output)
-            if not output then
-                self.sender:send(command)
-            else
+            if output then
                 local s = socket.connect(ip, port)
                 s:send(command)
                 local data = s:receive(tonumber(string.match(s:receive("*l"), "ANSWER (%d+)")))
                 s:receive("*l") -- End of output
                 s:close()
                 return data:gsub('\n$','')
-            end
+            else
+				self.sender:send(command)
+			end
         end,
 
         _filter_text = function(self, str)
