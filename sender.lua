@@ -27,8 +27,8 @@ local Sender = function(ip, port)
                 s:close()
                 return data:gsub('\n$','')
             else
-				self.sender:send(command)
-			end
+                self.sender:send(command)
+            end
         end,
 
         _filter_text = function(self, str)

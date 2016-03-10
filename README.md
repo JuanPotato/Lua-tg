@@ -10,4 +10,4 @@ link = tg:export_chat_link(chat_id)
 print(link)
 ```
 
-Thanks to [@topkecleon](https://github.com/topkecleon) for petty improvements.
+Project by JuanPotato with the help of topkecleon.
